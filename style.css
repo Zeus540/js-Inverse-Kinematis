@@ -9,4 +9,5 @@ body,html{
     border:10px solid black;
     max-width: 100%;
     min-height: 100%;
+    background: red;
 }
