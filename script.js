@@ -36,9 +36,9 @@ window.addEventListener("load", ()=>{
     canvas.width = width
 
     //adding limb
-    let upperarm = new Limb(startx - upperarmX ,starty -upperarmY ,0,50,[])
-    let forearm = new Limb(startx -forearmX  , starty -forearmY  ,0,50,[])
-    let hand = new Limb(startx - handX,starty - handY,0,50,[])
+    let upperarm = new Limb(startx - upperarmX ,starty -upperarmY ,90,50,[])
+    let forearm = new Limb(startx -forearmX  , starty -forearmY  ,90,50,[])
+    let hand = new Limb(startx - handX,starty - handY,90,50,[])
 
     arm.push(upperarm,forearm,hand)
     
@@ -77,17 +77,31 @@ function getEndy(y,angle) {
 
    const draw =(x,y,arm)=>{
    
-        let endPoint = arm.pop()
-         let upperarm = new Limb(getEndx(endPoint.children.x,endPoint.children.angle),getEndy(endPoint.children.y,endPoint.children.angle),0,50,[])
+        let endPointidx = arm.length - 1
+        let endPoint = arm[endPointidx]
+
+         let upperarm = new Limb(x,y,0,50,[])
          let forearm = new Limb(getEndx(endPoint.children.x,endPoint.children.angle),getEndy(endPoint.children.y,endPoint.children.angle),0,50,[])
          let hand = new Limb(x,y,0,50,[])
   
       
-        console.log("endPoint",endPoint)
-        arm = []
-        arm.push(upperarm,forearm,hand)
-
+  
+     
+        console.log("endPoint.children.x",endPoint.children.x)
     
+        arm = []
+        
+         arm.push(upperarm,forearm,hand)
+        
+        for (let index = 0; index < arm.reverse().length; index++) {
+            const element = arm[index];
+            if(element.children){
+             element.children = arm[index -1 ]
+            }
+        }
+     
+        console.log("arm",arm)
+        
         ctx.moveTo(startx  ,starty)
    
         arm.forEach(element => {
