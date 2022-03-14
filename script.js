@@ -31,52 +31,63 @@
     }
 
 window.addEventListener("load", ()=>{
-
+    //setting canvas size
     canvas.height = height
     canvas.width = width
 
-
-    let upperarm = new Limb(startx - upperarmX ,starty -upperarmY ,0,30,[])
-    let forearm = new Limb(startx -forearmX  , starty -forearmY  ,0,10,[])
-    let hand = new Limb( startx -handX,starty - handY,0,5,[])
+    //adding limb
+    let upperarm = new Limb(startx - upperarmX ,starty -upperarmY ,0,50,[])
+    let forearm = new Limb(startx -forearmX  , starty -forearmY  ,0,50,[])
+    let hand = new Limb(startx - handX,starty - handY,0,50,[])
 
     arm.push(upperarm,forearm,hand)
+    
+
+    //adding limb children
     console.log('arm',arm)
+   for (let index = 0; index < arm.length; index++) {
+       const element = arm[index];
+       if(element.children){
+        element.children = arm[index -1 ]
+       }
+   }
+
+    //drawing intial limbs
     ctx.moveTo(startx,starty)
- 
     arm.forEach(element => {
- 
         ctx.lineTo(element.x,element.y)
         ctx.stroke()
-        
     })
 
 })
 
 window.addEventListener("resize",()=>{
+    //update canvas size
     height = window.innerHeight
     width = window.innerWidth
 })
 
+function getEndx(x,angle) {
+    return x + Math.cos(angle) * length
+}
+
+function getEndy(y,angle) {
+    return y + Math.cos(angle) * length
+}
 
    const draw =(x,y,arm)=>{
    
-        let endPoint = arm.length
-        let upperarmtan = Math.atan2(arm[1].x,arm[1].y)
-        let forearmtan = Math.atan2(arm[2].x,arm[2].y)
+        let endPoint = arm.pop()
+         let upperarm = new Limb(getEndx(endPoint.children.x,endPoint.children.angle),getEndy(endPoint.children.y,endPoint.children.angle),0,50,[])
+         let forearm = new Limb(getEndx(endPoint.children.x,endPoint.children.angle),getEndy(endPoint.children.y,endPoint.children.angle),0,50,[])
+         let hand = new Limb(x,y,0,50,[])
+  
       
-
-        let upperarm = new Limb(arm[1].x,arm[1].y  ,0,30,[])
-        let forearm = new Limb( arm[2].x -Math.atan2(arm[2].x,arm[2].y) * 180 / 3.14, arm[2].y - Math.atan2(arm[2].x,arm[2].y) * 180 / 3.14  ,0,10,[])
-        let hand = new Limb(x,y,0,5,[])
-        
+        console.log("endPoint",endPoint)
         arm = []
         arm.push(upperarm,forearm,hand)
-      
- 
-        console.log('arm[1].x,arm[1].y',upperarmtan * 180 / 3.14)
-        console.log('arm[2].x,arm[2].y',arm[2].x,arm[2].y)
-        console.log('arm',arm)
+
+    
         ctx.moveTo(startx  ,starty)
    
         arm.forEach(element => {
@@ -91,14 +102,15 @@ window.addEventListener("resize",()=>{
 
 
     canvas.addEventListener("mousedown",(e)=>{
-  
     ctx.beginPath()
     ctx.clearRect(0, 0, width, height)
+
     draw(e.clientX,e.clientY,arm)
+
     })
   
     clear.addEventListener("click",(e)=>{
-        arm.length = 0
+        arm= []
         console.log('arm',arm)
         ctx.beginPath()
         ctx.clearRect(0, 0, width, height)
